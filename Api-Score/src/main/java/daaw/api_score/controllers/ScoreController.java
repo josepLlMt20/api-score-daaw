@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import daaw.api_score.persistence.model.Score;
 import daaw.api_score.persistence.repo.ScoreRepository;
 
-@CrossOrigin(origins = "http://localhost:5173") // Cambia esto por el origen de tu frontend
+@CrossOrigin(origins = "*") // Cambia esto por el origen de tu frontend
 @RestController
 @RequestMapping("/api/score")
 public class ScoreController {
