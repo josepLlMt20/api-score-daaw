@@ -1,6 +1,7 @@
 package daaw.api_score.controllers;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +43,22 @@ public class ScoreController {
     @GetMapping("/getTopScores")
     public List<Score> getTopScores() {
         List<Score> scores = (List<Score>) scoreRepository.findAll();
-        scores.sort((s1, s2) -> Integer.compare(s2.getScore(), s1.getScore())); // Orden descendente
-        return scores.stream().limit(10).collect(Collectors.toList()); // Solo los 10 primeros
+    
+        // Agrupar les puntuacions pel nom del jugador i seleccionar la millor puntuació de cada grup
+        Map<String, Score> bestScoresByPlayer = scores.stream()
+            .collect(Collectors.toMap(
+                Score::getName, // Clau: nom del jugador
+                score -> score,       // Valor: l'objecte Score
+                (existing, replacement) -> existing.getScore() > replacement.getScore() ? existing : replacement // Mantenir la puntuació més alta
+            ));
+    
+        // Ordenar les millors puntuacions de cada jugador de forma descendent i limitar a les 10 primeres
+        return bestScoresByPlayer.values().stream()
+            .sorted((s1, s2) -> Integer.compare(s2.getScore(), s1.getScore())) // Ordenació descendent
+            .limit(10) // Limitar a les 10 millors puntuacions
+            .collect(Collectors.toList());
     }
+    
 
     // Obtener puntajes por nombre
     @GetMapping("/getScore")
